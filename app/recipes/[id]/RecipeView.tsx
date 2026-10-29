@@ -27,7 +27,8 @@ export default function RecipeView({ id }: { id: string }) {
   const { cooks } = useCooksAround(upcoming);
 
   const slot = SLOTS.find((s) => s.kind === r.kind)!;
-  const count = portions ?? (Number(params.get("portions")) || space.people);
+  const fromUrl = Math.round(Number(params.get("portions")));
+  const count = portions ?? (fromUrl >= 1 && fromUrl <= 60 ? fromUrl : space.people);
   const factor = count / r.serves;
   const fav = !!space.favorites[r.id];
   const map = coverage(cooks);
@@ -93,7 +94,7 @@ export default function RecipeView({ id }: { id: string }) {
 
       <div className="mt-10 grid gap-5 md:grid-cols-[1fr_1.3fr]">
         <section className="card h-fit rounded-3xl p-5">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-display text-xl">Продукты</h2>
             <div className="flex items-center gap-1 rounded-2xl bg-white/5 p-1">
               <button

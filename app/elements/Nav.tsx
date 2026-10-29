@@ -52,7 +52,7 @@ export default function Nav() {
         </div>
       </header>
 
-      <nav className="glass fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 flex justify-around rounded-3xl p-1.5 shadow-[0_20px_40px_-12px_rgb(0_0_0/0.8)] md:hidden">
+      <nav className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 flex justify-around rounded-3xl border border-white/15 bg-ash p-1.5 shadow-[0_-12px_32px_8px_rgb(10_10_10/0.95)] md:hidden">
         {LINKS.map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);
           return (
@@ -61,7 +61,7 @@ export default function Nav() {
               href={href}
               aria-current={active ? "page" : undefined}
               className={`flex flex-1 flex-col items-center gap-0.5 rounded-[20px] py-2 text-[13px] font-semibold transition ${
-                active ? "bg-white/7 text-lime" : "text-dim"
+                active ? "bg-lime text-ink" : "text-mute"
               }`}
             >
               <Icon size={21} strokeWidth={active ? 2.3 : 1.8} />

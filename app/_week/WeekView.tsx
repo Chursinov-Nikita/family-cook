@@ -118,18 +118,18 @@ export default function WeekView() {
               Соберу домашнее меню на {emptyMonths.map((m) => monthName(m).name).join(" и ")}: супы на 2–3 дня, вторые без
               повторов, всё можно поменять.
             </p>
-            <div className="mt-4 flex items-center gap-3">
+            <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
               <span className="text-mute">Готовим на</span>
               <PeopleStepper />
               <span className="text-mute">чел.</span>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex w-full flex-col gap-2 sm:w-auto">
             {emptyMonths.map((m) => (
               <button
                 key={m}
                 onClick={() => plan(m)}
-                className="flex items-center gap-2 rounded-full bg-lime px-5 py-3 font-bold text-ink"
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-lime px-5 py-3.5 text-lg font-bold text-ink sm:w-auto sm:text-base"
               >
                 <Sparkles size={17} /> Собрать {monthName(m).name}
               </button>

@@ -7,6 +7,7 @@ import Plate from "@/app/elements/Plate";
 import { KINDS, RECIPES, type Kind } from "@/app/lib/recipes";
 import { SLOTS } from "@/app/lib/types";
 import { useSpace } from "@/app/lib/hooks";
+import { formatTime } from "@/app/lib/dates";
 import { patchDoc } from "@/app/lib/store";
 import { sound } from "@/app/lib/sound";
 
@@ -50,12 +51,12 @@ export default function RecipesPage() {
         </label>
       </section>
 
-      <div className="no-scrollbar -mx-4 mb-6 flex gap-1.5 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+      <div className="mb-6 flex flex-wrap gap-2">
         {tabs.map((t) => (
           <button
             key={t.id}
             onClick={() => setKind(t.id)}
-            className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${
+            className={`rounded-full px-4 py-2 font-semibold transition ${
               kind === t.id ? "bg-cream text-ink" : "bg-white/4 text-mute hover:text-cream"
             }`}
           >
@@ -64,20 +65,25 @@ export default function RecipesPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
         {list.map((r) => {
           const fav = !!space.favorites[r.id];
           const color = colorOf(r.kind);
           return (
-            <div key={r.id} className="card group relative rounded-3xl transition hover:-translate-y-0.5">
-              <Link href={`/recipes/${r.id}/`} className="flex h-full flex-col items-start p-4 pb-3.5">
-                <Plate recipe={r} color={color} size={40} />
-                <span className="mt-4 text-sm font-bold" style={{ color }}>
-                  {KINDS.find((k) => k.id === r.kind)!.name}
-                </span>
-                <span className="mt-0.5 font-display text-lg leading-snug">{r.title}</span>
-                <span className="mt-auto flex items-center gap-1 pt-2 text-sm text-dim">
-                  <Clock size={12} /> {r.time} мин
+            <div key={r.id} className="card group relative min-w-0 rounded-2xl transition hover:border-white/25">
+              <Link
+                href={`/recipes/${r.id}/`}
+                className="flex h-full items-center gap-4 p-4 pr-14 sm:flex-col sm:items-start sm:gap-0 sm:pr-4"
+              >
+                <Plate recipe={r} color={color} size={44} />
+                <span className="flex min-w-0 flex-col sm:mt-4 sm:flex-1">
+                  <span className="text-sm font-semibold" style={{ color }}>
+                    {KINDS.find((k) => k.id === r.kind)!.name}
+                  </span>
+                  <span className="text-lg leading-snug font-semibold break-words">{r.title}</span>
+                  <span className="mt-1 flex items-center gap-1.5 text-sm text-mute sm:mt-auto sm:pt-2">
+                    <Clock size={14} /> {formatTime(r.time)}
+                  </span>
                 </span>
               </Link>
               <button
@@ -88,9 +94,9 @@ export default function RecipesPage() {
                   if (fav) sound.deselect();
                   else sound.select();
                 }}
-                className="absolute top-3 right-3 grid size-9 place-items-center rounded-full transition hover:bg-white/5"
+                className="absolute top-1/2 right-2 grid size-11 -translate-y-1/2 place-items-center rounded-full transition hover:bg-white/5 sm:top-2 sm:translate-y-0"
               >
-                <Heart size={17} className={fav ? "animate-pop fill-pink text-pink" : "text-dim"} />
+                <Heart size={20} className={fav ? "animate-pop fill-pink text-pink" : "text-dim"} />
               </button>
             </div>
           );

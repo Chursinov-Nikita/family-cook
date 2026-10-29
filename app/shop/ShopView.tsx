@@ -112,7 +112,7 @@ export default function ShopView() {
   const toggle = (row: Row) => {
     const next = !checked[row.key];
     patchDoc(path, { checked: { [row.key]: next || undefined } });
-    if (next && done + 1 === counted.length) sound.celebrate();
+    if (next && counted.includes(row) && done + 1 === counted.length) sound.celebrate();
     else if (next) sound.select();
     else sound.deselect();
   };

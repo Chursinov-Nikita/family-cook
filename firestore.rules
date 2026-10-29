@@ -2,18 +2,42 @@ rules_version = '2';
 
 // Доступ — только по коду семьи вида XXXX-XXXX-XXXX (12 случайных символов).
 // list запрещён: перебрать или увидеть чужие коды нельзя.
+// Запись принимается только с известными полями — мусор в базу не положить.
 service cloud.firestore {
   match /databases/{database}/documents {
     function validCode(code) {
       return code.matches('^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$');
     }
 
+    function onlyKeys(keys) {
+      return request.resource.data.keys().hasOnly(keys);
+    }
+
+    function validPeople() {
+      let data = request.resource.data;
+      return !('people' in data) || (data.people is int && data.people >= 1 && data.people <= 20);
+    }
+
     match /spaces/{code} {
-      allow get, create, update: if validCode(code);
+      allow get: if validCode(code);
+      allow create, update: if validCode(code)
+        && onlyKeys(['name', 'people', 'slots', 'durations', 'basics', 'dislikes', 'favorites'])
+        && validPeople();
       allow delete, list: if false;
 
-      match /{kind}/{id} {
-        allow get, create, update: if validCode(code) && kind in ['months', 'weeks'];
+      match /months/{month} {
+        allow get: if validCode(code);
+        allow create, update: if validCode(code)
+          && month.matches('^20[0-9]{2}-(0[1-9]|1[0-2])$')
+          && onlyKeys(['cooks', 'generatedAt']);
+        allow delete, list: if false;
+      }
+
+      match /weeks/{week} {
+        allow get: if validCode(code);
+        allow create, update: if validCode(code)
+          && week.matches('^20[0-9]{2}-(0[1-9]|1[0-2])-[0-3][0-9]$')
+          && onlyKeys(['checked', 'swaps', 'hidden', 'extra']);
         allow delete, list: if false;
       }
     }

@@ -1,5 +1,5 @@
 import { RECIPES, recipe as findRecipe, type Recipe } from "./recipes";
-import { addDays, diffDays, monthDays } from "./dates";
+import { addDays, diffDays, monthDays, today } from "./dates";
 import { SLOTS, slotInfo, type Cook, type Slot, type Space } from "./types";
 import { patchDoc, replaceDoc, uid } from "./store";
 
@@ -77,12 +77,13 @@ export const generateMonth = (
   previous: Cook[],
 ) => {
   const days = monthDays(month);
+  const now = today();
   const result: Cook[] = [];
 
   SLOTS.forEach(({ id: slot }) => {
     if (!space.slots[slot]) return;
     const locked = current
-      .filter((c) => c.slot === slot && c.locked)
+      .filter((c) => c.slot === slot && (c.locked || c.start < now))
       .sort((a, b) => a.start.localeCompare(b.start));
     const ctx: Context = {
       used: new Map(locked.map((c) => [c.recipe, c.start])),

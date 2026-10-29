@@ -228,10 +228,10 @@ export default function MonthPage() {
 
       <Sheet open={confirm} onClose={() => setConfirm(false)} title="Собрать заново?">
         <p className="text-mute">
-          Меню на {name} соберётся с нуля.{" "}
+          Блюда на {name} подберутся заново начиная с сегодняшнего дня. Прошедшие дни
           {locked > 0
-            ? `${locked} ${plural(locked, "закреплённое блюдо останется", "закреплённых блюда останутся", "закреплённых блюд останутся")} на своих местах.`
-            : "Закреплённых блюд нет — поменяется всё."}
+            ? ` и ${locked} ${plural(locked, "закреплённое блюдо", "закреплённых блюда", "закреплённых блюд")} останутся на своих местах.`
+            : " останутся как были."}
         </p>
         <div className="mt-5 grid grid-cols-2 gap-2">
           <button onClick={() => setConfirm(false)} className="rounded-2xl bg-white/6 py-3 font-semibold">

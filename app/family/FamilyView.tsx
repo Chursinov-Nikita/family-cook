@@ -149,7 +149,6 @@ export default function FamilyView() {
       )}
 
       <section className="card relative overflow-hidden rounded-3xl p-5 sm:p-6">
-        <div className="pointer-events-none absolute -top-24 -right-16 size-64 rounded-full bg-[radial-gradient(closest-side,rgb(200_245_96/0.18),transparent)]" />
         <div className="relative">
           <div className="flex items-center gap-2 text-sm text-mute">
             <span
@@ -268,12 +267,12 @@ export default function FamilyView() {
                   </button>
                 </div>
                 {on && (
-                  <div className="no-scrollbar mt-3 flex gap-1.5 overflow-x-auto">
+                  <div className="mt-3 flex flex-wrap gap-1.5">
                     {PRESETS.map((p) => (
                       <button
                         key={p.join()}
                         onClick={() => setDuration(s.id, p)}
-                        className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-bold transition ${
+                        className={`rounded-full px-3.5 py-2 text-sm font-semibold transition ${
                           p[0] === min && p[1] === max ? "bg-cream text-ink" : "bg-white/5 text-mute hover:text-cream"
                         }`}
                       >
