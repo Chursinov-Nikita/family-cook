@@ -1,0 +1,4 @@
+:HL["/family-cook/_next/static/chunks/10me9cpxqrsgl.css","style"]
+2:[["children",{"s":"__PAGE__","h":160}]]
+1:[["children",{"s":"/_not-found","h":96,"c":"$Q2"}]]
+0:{"b":"Llgbn8HgC5kKMVSS8Se6e","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

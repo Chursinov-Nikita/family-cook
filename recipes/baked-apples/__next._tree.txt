@@ -1,0 +1,7 @@
+:HL["/family-cook/_next/static/chunks/10me9cpxqrsgl.css","style"]
+:HL["/family-cook/_next/static/media/01d917b2efda642a-s.p.0y1w0k24nk0rl.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/family-cook/_next/static/media/c50b0495a1ff0f08-s.p.2sla2yow9-9p_.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+3:[["children",{"s":"__PAGE__","h":160}]]
+2:[["children",{"s":{"n":"id","t":"d","k":"baked-apples","s":[]},"h":65632,"c":"$Q3"}]]
+1:[["children",{"s":"recipes","h":131168,"c":"$Q2"}]]
+0:{"b":"Llgbn8HgC5kKMVSS8Se6e","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
