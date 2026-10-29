@@ -1,0 +1,21 @@
+rules_version = '2';
+
+// Доступ — только по коду семьи вида XXXX-XXXX-XXXX (12 случайных символов).
+// list запрещён: перебрать или увидеть чужие коды нельзя.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function validCode(code) {
+      return code.matches('^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$');
+    }
+
+    match /spaces/{code} {
+      allow get, create, update: if validCode(code);
+      allow delete, list: if false;
+
+      match /{kind}/{id} {
+        allow get, create, update: if validCode(code) && kind in ['months', 'weeks'];
+        allow delete, list: if false;
+      }
+    }
+  }
+}
