@@ -1,4 +1,4 @@
-const CACHE = "menu-v1";
+const CACHE = "menu-v2";
 const BASE = new URL(self.registration.scope).pathname;
 const ROUTES = ["", "month/", "shop/", "recipes/", "family/"];
 const FILES = [
@@ -10,7 +10,6 @@ const FILES = [
   "icons/icon-maskable-512.png",
 ];
 const ASSET = /(?:src|href)="([^"]*\/_next\/static\/[^"]+)"/g;
-const RECIPE = /href="[^"]*\/(recipes\/[a-z0-9-]+\/)"/g;
 
 const savePage = async (cache, assets, route) => {
   const url = BASE + route;
@@ -24,17 +23,14 @@ const savePage = async (cache, assets, route) => {
   return html;
 };
 
+// Заранее кэшируем только основные экраны — установка идёт секунды даже на мобильном
+// интернете. Рецепты попадают в кэш, когда их открывают. Сбой одного файла
+// не должен ронять установку целиком, поэтому allSettled и catch.
 const precache = async () => {
   const cache = await caches.open(CACHE);
   const assets = new Set();
-  const pages = await Promise.all(ROUTES.map((route) => savePage(cache, assets, route)));
-  // страницы рецептов — чтобы открывались у плиты и в магазине без сети
-  const recipes = new Set();
-  pages.forEach((html) => {
-    for (const match of html.matchAll(RECIPE)) recipes.add(match[1]);
-  });
-  await Promise.all([...recipes].map((route) => savePage(cache, assets, route).catch(() => "")));
-  await Promise.all(
+  await Promise.allSettled(ROUTES.map((route) => savePage(cache, assets, route)));
+  await Promise.allSettled(
     [...assets, ...FILES.map((file) => BASE + file)].map((url) =>
       cache.add(url).catch(() => {}),
     ),
