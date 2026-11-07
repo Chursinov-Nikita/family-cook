@@ -1,4 +1,3 @@
-// Одно едва заметное свечение сверху — без зерна и лишних пятен
 export default function Background() {
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">

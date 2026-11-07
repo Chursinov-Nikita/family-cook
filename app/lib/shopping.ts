@@ -13,9 +13,8 @@ export type ShopItem = {
 };
 
 export const portions = (cook: Cook, space: Space) =>
-  (cook.servings ?? space.people) * cook.days;
+  (cook.servings ?? space.people) * Math.min(Math.max(cook.days, 1), 31);
 
-// Продукты для блюд, которые готовим на этой неделе (по дню начала готовки)
 export const buildShopList = (cooks: Cook[], days: string[], space: Space) => {
   const items = new Map<string, ShopItem>();
   cooks

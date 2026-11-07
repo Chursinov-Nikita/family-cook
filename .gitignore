@@ -42,6 +42,7 @@ next-env.d.ts
 
 # служебные папки
 .playwright-mcp/
+.playwright-cli/
 .vercel
 
 # пример переменных можно коммитить

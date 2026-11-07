@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
 import {
   Apple,
   Beef,
@@ -28,8 +27,8 @@ import {
 } from "lucide-react";
 import Sheet from "@/app/elements/Sheet";
 import PeopleChip from "@/app/elements/People";
-import { useCooksAround, useSpace, useToday, useWeek } from "@/app/lib/hooks";
-import { addDays, parse, weekDays, weekRange, weekStart } from "@/app/lib/dates";
+import { useCooksAround, useQueryParam, useSpace, useToday, useWeek } from "@/app/lib/hooks";
+import { addDays, isDay, parse, weekDays, weekRange, weekStart } from "@/app/lib/dates";
 import { DEPTS, formatAmount } from "@/app/lib/ingredients";
 import { buildShopList } from "@/app/lib/shopping";
 import { recipe as findRecipe } from "@/app/lib/recipes";
@@ -49,21 +48,19 @@ type Row = {
 };
 
 const defaultWeek = (today: string) => {
-  // в выходные обычно закупаются на следующую неделю
   const weekdayIndex = (parse(today).getDay() + 6) % 7;
   return weekStart(weekdayIndex >= 5 ? addDays(today, 7) : today);
 };
 
 export default function ShopView() {
-  const params = useSearchParams();
   const today = useToday();
-  const [picked, setPicked] = useState<string | null>(null);
+  const [weekParam, setWeekParam] = useQueryParam("week");
   const [menu, setMenu] = useState<Row | null>(null);
   const [swap, setSwap] = useState("");
   const [draft, setDraft] = useState("");
   const [showPantry, setShowPantry] = useState(false);
   const [showHidden, setShowHidden] = useState(false);
-  const start = picked ?? params.get("week") ?? (today ? defaultWeek(today) : null);
+  const start = isDay(weekParam) ? weekStart(weekParam) : today ? defaultWeek(today) : null;
   const days = start ? weekDays(start) : [];
   const { space } = useSpace();
   const { cooks } = useCooksAround(days);
@@ -186,9 +183,9 @@ export default function ShopView() {
         <button
           aria-label="Ещё"
           onClick={() => openMenu(row)}
-          className="grid size-8 shrink-0 place-items-center rounded-full text-dim transition hover:bg-white/5 hover:text-cream"
+          className="grid size-10 shrink-0 place-items-center rounded-full text-mute transition hover:bg-white/5 hover:text-cream"
         >
-          <MoreHorizontal size={17} />
+          <MoreHorizontal size={20} />
         </button>
       </li>
     );
@@ -222,7 +219,7 @@ export default function ShopView() {
           <div className="flex items-center gap-2">
             <button
               aria-label="Предыдущая неделя"
-              onClick={() => setPicked(addDays(start, -7))}
+              onClick={() => setWeekParam(addDays(start, -7))}
               className="grid size-10 place-items-center rounded-full border border-line text-mute transition hover:text-cream"
             >
               <ChevronLeft size={18} />
@@ -233,7 +230,7 @@ export default function ShopView() {
             </div>
             <button
               aria-label="Следующая неделя"
-              onClick={() => setPicked(addDays(start, 7))}
+              onClick={() => setWeekParam(addDays(start, 7))}
               className="grid size-10 place-items-center rounded-full border border-line text-mute transition hover:text-cream"
             >
               <ChevronRight size={18} />

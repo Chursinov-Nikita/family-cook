@@ -2,16 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, ShoppingBasket, Sparkles } from "lucide-react";
 import MealCard from "@/app/elements/MealCard";
 import DishSheet, { type Target } from "@/app/elements/DishSheet";
 import PeopleChip, { PeopleStepper } from "@/app/elements/People";
-import { useCooksAround, useMonth, useSpace, useToday } from "@/app/lib/hooks";
+import { useCooksAround, useMonth, useQueryParam, useSpace, useToday } from "@/app/lib/hooks";
 import {
   addDays,
   addMonths,
   dayNum,
+  isDay,
   longDate,
   monthName,
   monthOf,
@@ -28,11 +28,10 @@ import { buildShopList } from "@/app/lib/shopping";
 import { sound } from "@/app/lib/sound";
 
 export default function WeekView() {
-  const params = useSearchParams();
   const today = useToday();
-  const [picked, setPicked] = useState<string | null>(null);
+  const [dayParam, setDayParam] = useQueryParam("day");
   const [target, setTarget] = useState<Target | null>(null);
-  const day = picked ?? params.get("day") ?? today;
+  const day = isDay(dayParam) ? dayParam : today;
   const days = day ? weekDays(weekStart(day)) : [];
   const { space } = useSpace();
   const { cooks, ready } = useCooksAround(days);
@@ -61,7 +60,7 @@ export default function WeekView() {
   };
 
   const go = (d: string) => {
-    setPicked(d);
+    setDayParam(d === today ? null : d);
     sound.tap();
   };
 
@@ -138,7 +137,6 @@ export default function WeekView() {
         </div>
       )}
 
-      {/* Телефон: полоска дней и подробный день */}
       <div className="lg:hidden">
         <div className="mb-5 flex gap-1">
           {days.map((d) => {
@@ -172,8 +170,6 @@ export default function WeekView() {
         </div>
       </div>
 
-      {/* Компьютер: вся неделя доской */}
-      {/* ряд на каждый приём пищи — карточки одной строки выровнены по высоте */}
       <div className="hidden grid-cols-7 gap-2 lg:grid">
         {days.map((d) => (
           <div

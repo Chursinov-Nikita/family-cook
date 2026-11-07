@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpen, CalendarDays, CalendarRange, ShoppingBasket, Soup, Users } from "lucide-react";
 import SyncBadge from "./SyncBadge";
+import { markVisit } from "@/app/lib/history";
 
 const LINKS = [
   { href: "/", label: "Неделя", icon: CalendarDays },
@@ -18,6 +20,10 @@ const isActive = (pathname: string, href: string) =>
 
 export default function Nav() {
   const pathname = usePathname();
+
+  useEffect(() => {
+    markVisit();
+  }, [pathname]);
 
   return (
     <>
@@ -60,11 +66,11 @@ export default function Nav() {
               key={href}
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`flex flex-1 flex-col items-center gap-0.5 rounded-[20px] py-2 text-[13px] font-semibold transition ${
+              className={`flex flex-1 flex-col items-center gap-0.5 rounded-[20px] py-2 text-[11px] font-semibold transition ${
                 active ? "bg-lime text-ink" : "text-mute"
               }`}
             >
-              <Icon size={21} strokeWidth={active ? 2.3 : 1.8} />
+              <Icon size={20} strokeWidth={active ? 2.3 : 1.8} />
               {label}
             </Link>
           );

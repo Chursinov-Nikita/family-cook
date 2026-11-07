@@ -91,7 +91,6 @@ export default function FamilyView() {
     const name = basicName.trim();
     if (!name) return;
     const id = `b-${uid()}`;
-    // пишем весь список: пока семья его не меняла, он берётся из значений по умолчанию
     patchDoc("", {
       basics: {
         ...space.basics,

@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, CalendarPlus, Clock, Heart, Minus, Plus } from "lucide-react";
+import { ArrowLeft, CalendarPlus, Clock, Heart, Lightbulb, Minus, Plus, Sun } from "lucide-react";
 import Plate from "@/app/elements/Plate";
 import Sheet from "@/app/elements/Sheet";
-import { KINDS, recipe as findRecipe } from "@/app/lib/recipes";
+import { KINDS, recipe as findRecipe, seasonLabel } from "@/app/lib/recipes";
 import { formatAmount, product } from "@/app/lib/ingredients";
 import { SLOTS } from "@/app/lib/types";
 import { useCooksAround, useSpace, useToday } from "@/app/lib/hooks";
 import { addCook, coverage, setDays, setRecipe } from "@/app/lib/planner";
-import { addDays, diffDays, longDate, monthOf, weekday } from "@/app/lib/dates";
+import { addDays, diffDays, formatTime, longDate, monthOf, weekday } from "@/app/lib/dates";
 import { patchDoc } from "@/app/lib/store";
+import { canGoBack } from "@/app/lib/history";
 import { sound } from "@/app/lib/sound";
 
 export default function RecipeView({ id }: { id: string }) {
@@ -37,9 +38,9 @@ export default function RecipeView({ id }: { id: string }) {
     const month = monthOf(day);
     const monthCooks = cooks.filter((c) => monthOf(c.start) === month);
     const entry = map.get(`${day}|${slot.id}`);
+    if (!space.slots[slot.id]) patchDoc("", { slots: { [slot.id]: true } });
     if (entry && entry.cook.start === day) setRecipe(month, entry.cook, r.id);
     else {
-      // день занят остатками прошлой готовки — укорачиваем её
       if (entry) setDays(month, entry.cook, diffDays(entry.cook.start, day), monthCooks);
       addCook(month, slot.id, day, r.id, monthCooks, space);
     }
@@ -51,7 +52,7 @@ export default function RecipeView({ id }: { id: string }) {
   return (
     <article className="mx-auto max-w-3xl animate-fade">
       <button
-        onClick={() => (window.history.length > 1 ? router.back() : router.push("/recipes/"))}
+        onClick={() => (canGoBack() ? router.back() : router.push("/recipes/"))}
         className="mb-6 flex items-center gap-2 text-sm font-semibold text-mute transition hover:text-cream"
       >
         <ArrowLeft size={17} /> Назад
@@ -66,8 +67,13 @@ export default function RecipeView({ id }: { id: string }) {
           <h1 className="mt-2 font-display text-3xl leading-tight sm:text-4xl">{r.title}</h1>
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <span className="flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-sm text-mute">
-              <Clock size={14} /> {r.time} мин
+              <Clock size={14} /> {formatTime(r.time)}
             </span>
+            {seasonLabel(r) && (
+              <span className="flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-sm text-mute">
+                <Sun size={14} /> Сезон: {seasonLabel(r)}
+              </span>
+            )}
             <button
               aria-pressed={fav}
               onClick={() => {
@@ -142,6 +148,13 @@ export default function RecipeView({ id }: { id: string }) {
               </li>
             ))}
           </ol>
+          <aside className="mt-4 flex gap-3 rounded-2xl border border-lime/30 bg-lime/8 p-4">
+            <Lightbulb size={20} className="mt-0.5 shrink-0 text-lime" />
+            <p className="leading-relaxed">
+              <span className="font-semibold text-lime">Совет. </span>
+              {r.tip}
+            </p>
+          </aside>
         </section>
       </div>
 

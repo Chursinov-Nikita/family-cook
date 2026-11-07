@@ -10,7 +10,7 @@ import { peopleLabel } from "./People";
 import { recipe as findRecipe } from "@/app/lib/recipes";
 import { slotInfo, type Cook, type Slot, type Space } from "@/app/lib/types";
 import { addCook, deleteCook, setDays, setRecipe, setServings, suggestFor, toggleLock, candidates } from "@/app/lib/planner";
-import { longDate, monthOf, plural, weekdayFull } from "@/app/lib/dates";
+import { formatTime, longDate, monthOf, plural, weekdayFull } from "@/app/lib/dates";
 import { sound } from "@/app/lib/sound";
 
 export type Target = { slot: Slot; day: string; cook?: Cook; index?: number };
@@ -32,7 +32,6 @@ export default function DishSheet({ target, onClose, monthCooks, space }: Props)
   if (!target) return <Sheet open={false} onClose={close}>{null}</Sheet>;
 
   const { slot, day } = target;
-  // берём свежую версию из плана — после «закрепить» или смены дней
   const cook = target.cook && (monthCooks.find((c) => c.id === target.cook!.id) ?? target.cook);
   const info = slotInfo(slot);
   const month = monthOf(cook?.start ?? day);
@@ -54,8 +53,8 @@ export default function DishSheet({ target, onClose, monthCooks, space }: Props)
         {!cook && (
           <button
             onClick={() => {
-              const list = candidates(slot, space).filter((x) => !used.has(x.id));
-              const pool = list.length ? list : candidates(slot, space);
+              const list = candidates(slot, space, day).filter((x) => !used.has(x.id));
+              const pool = list.length ? list : candidates(slot, space, day);
               pickRecipe(pool[Math.floor(Math.random() * pool.length)].id);
             }}
             className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-lime py-3 font-bold text-ink"
@@ -63,13 +62,12 @@ export default function DishSheet({ target, onClose, monthCooks, space }: Props)
             <Sparkles size={17} /> Подобрать за меня
           </button>
         )}
-        <RecipePicker kind={info.kind} space={space} current={cook?.recipe} used={used} onPick={pickRecipe} />
+        <RecipePicker kind={info.kind} space={space} day={day} current={cook?.recipe} used={used} onPick={pickRecipe} />
       </Sheet>
     );
   }
 
   const servings = cook.servings ?? space.people;
-  // совпало с общим числом — блюдо снова следует за настройкой семьи
   const changeServings = (n: number) => {
     const next = Math.min(20, Math.max(1, n));
     setServings(month, cook, next === space.people ? undefined : next);
@@ -86,7 +84,7 @@ export default function DishSheet({ target, onClose, monthCooks, space }: Props)
           <p className="mt-1 text-sm text-mute">
             {target.index
               ? `Доедаем — день ${target.index + 1} из ${cook.days}`
-              : `Готовим ${longDate(cook.start)} · ${r.time} мин`}
+              : `Готовим ${longDate(cook.start)} · ${formatTime(r.time)}`}
           </p>
         </div>
       </div>

@@ -1,8 +1,6 @@
 import { deleteField, doc, onSnapshot, setDoc } from "firebase/firestore";
 import { cloudEnabled, firestore } from "./firebase";
 
-// ——— Код семьи ———
-// Код и есть «ключ» от общего меню: кто его знает, тот видит и меняет данные.
 const CODE_KEY = "menu:space";
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 export const LOCAL_CODE = "LOCAL";
@@ -51,7 +49,6 @@ export const subscribeCode = (listener: () => void) => {
   return () => codeListeners.delete(listener);
 };
 
-// ——— Статус синхронизации ———
 export type SyncStatus = "local" | "offline" | "syncing" | "synced";
 
 const pending = new Map<symbol, boolean>();
@@ -83,8 +80,6 @@ export const subscribeStatus = (listener: () => void) => {
   };
 };
 
-// ——— Документы ———
-// path: "" — настройки семьи, "months/2026-11", "weeks/2026-11-02"
 type Data = Record<string, unknown>;
 
 const fullPath = (path: string) =>
@@ -182,8 +177,6 @@ const forFirestore = (changes: Data): Data =>
     ]),
   );
 
-// Глубокое слияние: вложенные объекты дополняются, undefined удаляет поле.
-// Запись не ждём — без сети Firestore поставит её в очередь и отправит позже.
 export const patchDoc = (path: string, changes: Data) => {
   const db = firestore();
   if (!db) {

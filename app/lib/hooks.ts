@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   getCode,
   getServerCode,
@@ -10,7 +11,7 @@ import {
   subscribeDoc,
   subscribeStatus,
 } from "./store";
-import { addMonths, monthOf, today as todayIso } from "./dates";
+import { monthOf, today as todayIso } from "./dates";
 import { withDefaults, type Cook, type MonthDoc, type Space, type WeekDoc } from "./types";
 
 export const useCode = () => useSyncExternalStore(subscribeCode, getCode, getServerCode);
@@ -20,7 +21,6 @@ export const useSyncStatus = () =>
 
 const noop = () => () => {};
 
-// true только в браузере — чтобы статическая страница не мигала чужими датами
 export const useMounted = () =>
   useSyncExternalStore(noop, () => true, () => false);
 
@@ -58,7 +58,6 @@ export const useWeek = (start: string | null) => {
   return { week: data ?? {}, ready };
 };
 
-// Готовки за период, который может зацепить два месяца (неделя на стыке)
 export const useCooksAround = (days: string[]) => {
   const first = days.length ? monthOf(days[0]) : null;
   const last = days.length ? monthOf(days[days.length - 1]) : null;
@@ -68,4 +67,16 @@ export const useCooksAround = (days: string[]) => {
   return { cooks, ready: a.ready && (last === first || b.ready) };
 };
 
-export const usePrevMonth = (month: string) => useMonth(addMonths(month, -1));
+export const useQueryParam = (key: string) => {
+  const params = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const set = (value: string | null) => {
+    const next = new URLSearchParams(params.toString());
+    if (value) next.set(key, value);
+    else next.delete(key);
+    const query = next.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  };
+  return [params.get(key), set] as const;
+};

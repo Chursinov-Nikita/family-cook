@@ -9,7 +9,6 @@ type Props = {
   dim?: boolean;
 };
 
-// Иконка блюда на плитке, подкрашенной цветом приёма пищи
 export default function Plate({ recipe, color, size = 44, dim }: Props) {
   return (
     <div

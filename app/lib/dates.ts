@@ -1,4 +1,3 @@
-// Все даты — строки YYYY-MM-DD в локальном времени
 const pad = (n: number) => String(n).padStart(2, "0");
 
 export const iso = (date: Date) =>
@@ -10,6 +9,12 @@ export const parse = (day: string) => {
 };
 
 export const today = () => iso(new Date());
+
+export const isDay = (value: string | null): value is string =>
+  !!value && /^\d{4}-\d{2}-\d{2}$/.test(value) && iso(parse(value)) === value;
+
+export const isMonth = (value: string | null): value is string =>
+  !!value && /^\d{4}-(0[1-9]|1[0-2])$/.test(value);
 
 export const addDays = (day: string, n: number) => {
   const date = parse(day);
@@ -34,7 +39,6 @@ export const monthDays = (month: string) => {
   return Array.from({ length: count }, (_, i) => `${month}-${pad(i + 1)}`);
 };
 
-// Неделя начинается с понедельника
 export const weekStart = (day: string) => {
   const weekday = (parse(day).getDay() + 6) % 7;
   return addDays(day, -weekday);
@@ -80,7 +84,6 @@ export const plural = (n: number, one: string, few: string, many: string) => {
   return many;
 };
 
-// «сварено в понедельник», «в среду»
 const WEEKDAYS_ACC = ["понедельник", "вторник", "среду", "четверг", "пятницу", "субботу", "воскресенье"];
 export const weekdayAcc = (day: string) => WEEKDAYS_ACC[(parse(day).getDay() + 6) % 7];
 

@@ -60,7 +60,6 @@ export const dishIcon = (r: Recipe): LucideIcon =>
 
 type Props = { recipe: Recipe; size?: number; className?: string; style?: React.CSSProperties };
 
-// Маленькая иконка блюда для строк и календаря
 export default function DishIcon({ recipe, size = 14, className, style }: Props) {
   return createElement(dishIcon(recipe), { size, strokeWidth: 2, className, style, "aria-hidden": true });
 }

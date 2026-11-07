@@ -2,19 +2,21 @@
 
 import { useState } from "react";
 import { Clock, Heart, Search } from "lucide-react";
-import { RECIPES, type Kind } from "@/app/lib/recipes";
+import { RECIPES, inSeason, type Kind } from "@/app/lib/recipes";
 import { SLOTS, type Space } from "@/app/lib/types";
 import Plate from "./Plate";
+import { formatTime } from "@/app/lib/dates";
 
 type Props = {
   kind: Kind;
   space: Space;
+  day?: string;
   current?: string;
   used?: Set<string>;
   onPick: (id: string) => void;
 };
 
-export default function RecipePicker({ kind, space, current, used, onPick }: Props) {
+export default function RecipePicker({ kind, space, day, current, used, onPick }: Props) {
   const [query, setQuery] = useState("");
   const color = SLOTS.find((s) => s.kind === kind)!.color;
   const q = query.trim().toLowerCase();
@@ -49,8 +51,9 @@ export default function RecipePicker({ kind, space, current, used, onPick }: Pro
                 <span className="block truncate font-semibold">{r.title}</span>
                 <span className="flex items-center gap-3 text-sm text-mute">
                   <span className="flex items-center gap-1">
-                    <Clock size={12} /> {r.time} мин
+                    <Clock size={12} /> {formatTime(r.time)}
                   </span>
+                  {day && !inSeason(r, day) && <span>летнее блюдо</span>}
                   {used?.has(r.id) && <span>уже в этом месяце</span>}
                   {r.id === current && <span>сейчас в плане</span>}
                 </span>

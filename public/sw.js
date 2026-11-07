@@ -23,9 +23,6 @@ const savePage = async (cache, assets, route) => {
   return html;
 };
 
-// Заранее кэшируем только основные экраны — установка идёт секунды даже на мобильном
-// интернете. Рецепты попадают в кэш, когда их открывают. Сбой одного файла
-// не должен ронять установку целиком, поэтому allSettled и catch.
 const precache = async () => {
   const cache = await caches.open(CACHE);
   const assets = new Set();

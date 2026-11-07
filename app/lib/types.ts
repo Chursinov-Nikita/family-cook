@@ -12,7 +12,6 @@ export const SLOTS: { id: Slot; name: string; kind: Kind; color: string }[] = [
 
 export const slotInfo = (slot: Slot) => SLOTS.find((s) => s.id === slot)!;
 
-// Одна готовка: блюдо, которое варят в день start и едят days дней подряд
 export type Cook = {
   id: string;
   slot: Slot;

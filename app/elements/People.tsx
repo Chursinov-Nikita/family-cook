@@ -11,7 +11,6 @@ import { sound } from "@/app/lib/sound";
 
 export const peopleLabel = (n: number) => `${n} ${plural(n, "человек", "человека", "человек")}`;
 
-// Число людей — значение по умолчанию для порций всех блюд и списка покупок
 export function PeopleStepper({ size = "md" }: { size?: "md" | "lg" }) {
   const { space } = useSpace();
   const set = (n: number) => {

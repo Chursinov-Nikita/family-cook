@@ -16,7 +16,6 @@ export type Product = {
   name: string;
   dept: Dept;
   unit: Unit;
-  // есть почти всегда дома: соль, масло, мука — показываем отдельно
   staple?: boolean;
 };
 
@@ -50,6 +49,10 @@ export const PRODUCTS: Record<string, Product> = {
   green_onion: { name: "Зелёный лук", dept: "veg", unit: "пучок" },
   pickles: { name: "Огурцы солёные", dept: "veg", unit: "г" },
   sauerkraut: { name: "Капуста квашеная", dept: "veg", unit: "г" },
+  sorrel: { name: "Щавель", dept: "veg", unit: "пучок" },
+  radish: { name: "Редис", dept: "veg", unit: "г" },
+  cauliflower: { name: "Цветная капуста", dept: "veg", unit: "г" },
+  eggplant: { name: "Баклажаны", dept: "veg", unit: "г" },
 
   apple: { name: "Яблоки", dept: "fruit", unit: "г" },
   banana: { name: "Бананы", dept: "fruit", unit: "шт" },
@@ -67,8 +70,11 @@ export const PRODUCTS: Record<string, Product> = {
   smoked: { name: "Копчёные рёбрышки", dept: "meat", unit: "г" },
   sausages: { name: "Колбаски / сосиски", dept: "meat", unit: "г" },
   ham: { name: "Ветчина", dept: "meat", unit: "г" },
+  pork_ribs: { name: "Свиные рёбрышки", dept: "meat", unit: "г" },
+  turkey_mince: { name: "Фарш из индейки", dept: "meat", unit: "г" },
 
-  fish_white: { name: "Филе минтая или трески", dept: "fish", unit: "г" },
+  fish_white: { name: "Белая рыба (минтай, хек, треска)", dept: "fish", unit: "г" },
+  mackerel: { name: "Скумбрия", dept: "fish", unit: "г" },
   salmon: { name: "Горбуша", dept: "fish", unit: "г" },
 
   milk: { name: "Молоко", dept: "dairy", unit: "мл" },
@@ -80,6 +86,7 @@ export const PRODUCTS: Record<string, Product> = {
   cheese_processed: { name: "Сыр плавленый", dept: "dairy", unit: "г" },
   butter: { name: "Масло сливочное", dept: "dairy", unit: "г" },
   eggs: { name: "Яйца", dept: "dairy", unit: "шт" },
+  cream_cheese: { name: "Творожный сыр", dept: "dairy", unit: "г" },
 
   rice: { name: "Рис", dept: "grocery", unit: "г" },
   buckwheat: { name: "Гречка", dept: "grocery", unit: "г" },
@@ -89,6 +96,11 @@ export const PRODUCTS: Record<string, Product> = {
   barley: { name: "Перловка", dept: "grocery", unit: "г" },
   pasta: { name: "Макароны", dept: "grocery", unit: "г" },
   noodles: { name: "Лапша яичная", dept: "grocery", unit: "г" },
+  vermicelli: { name: "Вермишель", dept: "grocery", unit: "г" },
+  bulgur: { name: "Булгур", dept: "grocery", unit: "г" },
+  corn_grits: { name: "Кукурузная крупа", dept: "grocery", unit: "г" },
+  lasagna: { name: "Листы для лазаньи", dept: "grocery", unit: "г" },
+  prunes: { name: "Чернослив", dept: "grocery", unit: "г" },
   lentils: { name: "Чечевица красная", dept: "grocery", unit: "г" },
   peas: { name: "Горох колотый", dept: "grocery", unit: "г" },
   raisins: { name: "Изюм", dept: "grocery", unit: "г" },
@@ -99,11 +111,17 @@ export const PRODUCTS: Record<string, Product> = {
   beans_canned: { name: "Фасоль консервированная", dept: "canned", unit: "г" },
   peas_green: { name: "Горошек зелёный", dept: "canned", unit: "г" },
   olives: { name: "Маслины", dept: "canned", unit: "г" },
+  corn_canned: { name: "Кукуруза консервированная", dept: "canned", unit: "г" },
+  tushonka: { name: "Тушёнка говяжья", dept: "canned", unit: "г" },
+  saury: { name: "Сайра консервированная", dept: "canned", unit: "г" },
 
   bread: { name: "Хлеб", dept: "bakery", unit: "г" },
+  lavash: { name: "Лаваш тонкий", dept: "bakery", unit: "шт" },
 
   berries: { name: "Ягоды замороженные", dept: "frozen", unit: "г" },
   broccoli: { name: "Брокколи замороженная", dept: "frozen", unit: "г" },
+  green_beans: { name: "Стручковая фасоль замороженная", dept: "frozen", unit: "г" },
+  puff_pastry: { name: "Тесто слоёное", dept: "frozen", unit: "г" },
 
   salt: { name: "Соль", dept: "pantry", unit: "г", staple: true },
   black_pepper: { name: "Перец чёрный молотый", dept: "pantry", unit: "г", staple: true },
@@ -118,6 +136,8 @@ export const PRODUCTS: Record<string, Product> = {
   soda: { name: "Сода", dept: "pantry", unit: "г", staple: true },
   baking_powder: { name: "Разрыхлитель", dept: "pantry", unit: "г", staple: true },
   soy_sauce: { name: "Соевый соус", dept: "pantry", unit: "мл", staple: true },
+  mustard: { name: "Горчица", dept: "pantry", unit: "г", staple: true },
+  vinegar: { name: "Уксус", dept: "pantry", unit: "мл", staple: true },
 };
 
 export const product = (id: string): Product =>
@@ -133,7 +153,6 @@ const nice = (n: number) => {
   return Math.ceil(n / 50) * 50;
 };
 
-// Количество для человека: «1,2 кг», «750 мл», «3 шт». 0 — «по вкусу».
 export const formatAmount = (amount: number, unit: Unit) => {
   if (!amount) return "по вкусу";
   if (unit === "г" || unit === "мл") {

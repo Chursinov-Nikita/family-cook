@@ -1,23 +1,25 @@
-import { RECIPES, recipe as findRecipe, type Recipe } from "./recipes";
+import { RECIPES, inSeason, recipe as findRecipe, type Recipe } from "./recipes";
 import { addDays, diffDays, monthDays, today } from "./dates";
 import { SLOTS, slotInfo, type Cook, type Slot, type Space } from "./types";
 import { patchDoc, replaceDoc, uid } from "./store";
 
 const allowed = (r: Recipe, space: Space) => !r.items.some(([id]) => space.dislikes[id]);
 
-export const candidates = (slot: Slot, space: Space) => {
+export const candidates = (slot: Slot, space: Space, day: string) => {
   const kind = slotInfo(slot).kind;
   const all = RECIPES.filter((r) => r.kind === kind);
-  const ok = all.filter((r) => allowed(r, space));
-  return ok.length ? ok : all;
+  const liked = all.filter((r) => allowed(r, space));
+  const pool = liked.length ? liked : all;
+  const seasonal = pool.filter((r) => inSeason(r, day));
+  return seasonal.length ? seasonal : pool;
 };
 
 const randomInt = (min: number, max: number) =>
   min + Math.floor(Math.random() * (max - min + 1));
 
 type Context = {
-  used: Map<string, string>; // рецепт → последний день в этом месяце
-  recent: Set<string>; // было в прошлом месяце
+  used: Map<string, string>;
+  recent: Set<string>;
   prevBase?: string;
   day: string;
 };
@@ -29,7 +31,6 @@ const score = (r: Recipe, slot: Slot, space: Space, ctx: Context) => {
   if (last) {
     const kind = slotInfo(slot).kind;
     const gap = diffDays(last, ctx.day);
-    // супы и вторые в месяце не повторяем, завтраки и перекусы — не чаще раза в неделю
     s -= kind === "soup" || kind === "main" ? 6 : gap < 7 ? 6 : 1;
   }
   if (ctx.recent.has(r.id)) s -= 1.2;
@@ -38,7 +39,7 @@ const score = (r: Recipe, slot: Slot, space: Space, ctx: Context) => {
 };
 
 const pick = (slot: Slot, space: Space, ctx: Context, exclude?: string) => {
-  const list = candidates(slot, space).filter((r) => r.id !== exclude);
+  const list = candidates(slot, space, ctx.day).filter((r) => r.id !== exclude);
   let best = list[0];
   let bestScore = -Infinity;
   list.forEach((r) => {
@@ -69,7 +70,6 @@ const toDoc = (cooks: Cook[]) =>
     }),
   );
 
-// Собирает меню на месяц. Закреплённые блюда остаются на своих местах.
 export const generateMonth = (
   month: string,
   space: Space,
@@ -117,7 +117,6 @@ export const generateMonth = (
   replaceDoc(`months/${month}`, { cooks: toDoc(result), generatedAt: new Date().toISOString() });
 };
 
-// Подбирает другое блюдо на место готовки
 export const suggestFor = (cook: Cook, monthCooks: Cook[], space: Space) => {
   const ctx: Context = {
     used: new Map(monthCooks.filter((c) => c.id !== cook.id).map((c) => [c.recipe, c.start])),
@@ -147,14 +146,12 @@ export const setServings = (month: string, cook: Cook, servings: number | undefi
 
 export const deleteCook = (month: string, cook: Cook) => removeCook(month, cook.id);
 
-// Все блюда месяца снова считаются на число людей из настроек семьи
 export const resetServings = (month: string, monthCooks: Cook[]) => {
   const custom = monthCooks.filter((c) => c.servings);
   if (!custom.length) return;
   patchDoc(`months/${month}`, { cooks: toDoc(custom.map((c) => ({ ...c, servings: undefined }))) });
 };
 
-// Добавить блюдо в пустой слот: занимает дни до следующей готовки
 export const addCook = (
   month: string,
   slot: Slot,
@@ -178,7 +175,6 @@ export const addCook = (
   });
 };
 
-// Изменить, на сколько дней готовим: соседнее блюдо сдвигается или исчезает
 export const setDays = (month: string, cook: Cook, days: number, monthCooks: Cook[]) => {
   const lastDay = monthDays(month).at(-1)!;
   const maxDays = diffDays(cook.start, lastDay) + 1;
@@ -200,11 +196,11 @@ export const setDays = (month: string, cook: Cook, days: number, monthCooks: Coo
   patchDoc(`months/${month}`, { cooks: changes });
 };
 
-// Какая готовка покрывает день в слоте и какой это по счёту день
 export const coverage = (cooks: Cook[]) => {
   const map = new Map<string, { cook: Cook; index: number }>();
   cooks.forEach((cook) => {
-    for (let i = 0; i < cook.days; i++) {
+    const days = Math.min(Math.max(Math.floor(cook.days) || 1, 1), 31);
+    for (let i = 0; i < days; i++) {
       map.set(`${addDays(cook.start, i)}|${cook.slot}`, { cook, index: i });
     }
   });

@@ -11,7 +11,6 @@ type Props = {
   children: React.ReactNode;
 };
 
-// Снизу на телефоне, по центру на компьютере
 export default function Sheet({ open, onClose, title, children }: Props) {
   useEffect(() => {
     if (!open) return;

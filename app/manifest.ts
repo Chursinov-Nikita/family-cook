@@ -9,8 +9,6 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "Что готовим",
     description: "Домашнее меню на месяц и список покупок на неделю для всей семьи.",
     lang: "ru",
-    // Новый id: Chrome считает это другим приложением и не натыкается
-    // на сломанную запись от первой неудачной установки на Android
     id: asset("/?app=menu-v2"),
     start_url: asset("/?app=menu-v2"),
     scope: asset("/"),

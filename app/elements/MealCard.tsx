@@ -25,7 +25,6 @@ const SlotLabel = ({ slot, muted }: { slot: Slot; muted?: boolean }) => {
   );
 };
 
-// Дни, на которые хватит готовки: «пн, вт, ср»
 const coveredDays = (cook: Cook) =>
   Array.from({ length: cook.days }, (_, i) => weekday(addDays(cook.start, i))).join(", ");
 

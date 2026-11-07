@@ -1,8 +1,5 @@
 rules_version = '2';
 
-// Доступ — только по коду семьи вида XXXX-XXXX-XXXX (12 случайных символов).
-// list запрещён: перебрать или увидеть чужие коды нельзя.
-// Запись принимается только с известными полями — мусор в базу не положить.
 service cloud.firestore {
   match /databases/{database}/documents {
     function validCode(code) {
